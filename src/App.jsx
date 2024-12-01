@@ -1,18 +1,25 @@
 import React, { useState } from "react";
+import { fordFulkerson } from "./algorithms/fordFulkerson";
 import GraphBuilder from "./components/GraphBuilder";
 import Visualizer from "./components/Visualizer";
 import Results from "./components/Result";
-import { fordFulkerson } from "./algorithms/fordFulkerson";
+import Modal from "./components/Modal";
+
 
 const App = () => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [maxFlow, setMaxFlow] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [source, setSource] = useState("");
+  const [sink, setSink] = useState("");
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const calculateMaxFlow = () => {
-    const source = prompt("Enter Source Node ID:");
-    const sink = prompt("Enter Sink Node ID:");
     const result = fordFulkerson(graph, source, sink);
     setMaxFlow(result);
+    closeModal();
   };
 
   return (
@@ -22,11 +29,20 @@ const App = () => {
       <Visualizer graph={graph} />
       <button
         className="bg-red-500 text-white px-4 py-2 rounded my-4"
-        onClick={calculateMaxFlow}
+        onClick={openModal}
       >
         Calculate Max Flow
       </button>
       {maxFlow !== null && <Results maxFlow={maxFlow} />}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSubmit={calculateMaxFlow}
+        source={source}
+        setSource={setSource}
+        sink={sink}
+        setSink={setSink}
+      />
     </div>
   );
 };
